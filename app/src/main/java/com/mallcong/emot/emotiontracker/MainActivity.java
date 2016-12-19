@@ -21,6 +21,7 @@ import org.opencv.core.MatOfRect;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
@@ -82,9 +83,9 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
         mRgba = inputFrame.rgba();
         // Rotate mRgba 90 degrees
-        Core.transpose(mRgba, mRgbaT);
-        Imgproc.resize(mRgbaT, mRgbaF, mRgbaF.size(), 0,0, 0);
-        Core.flip(mRgbaF, mRgba, 1 );
+//        Core.transpose(mRgba, mRgbaT);
+//        Imgproc.resize(mRgbaT, mRgbaF, mRgbaF.size(), 0,0, 0);
+//        Core.flip(mRgbaF, mRgba, 1 );
 
         //Convert image to grayscale to improve detection speed and accuracy
         Imgproc.cvtColor(mRgba, mGray, Imgproc.COLOR_RGBA2GRAY);
