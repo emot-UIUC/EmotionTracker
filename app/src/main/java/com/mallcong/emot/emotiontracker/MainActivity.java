@@ -150,7 +150,8 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
                         e.printStackTrace();
                     }
 
-                    faceCascade = new CascadeClassifier(mCascadeFile.getAbsolutePath());
+                    String faceCascadeName = mCascadeFile.getAbsolutePath();
+                    faceCascade = new CascadeClassifier(faceCascadeName);
                     if(faceCascade.empty()) {
                         System.out.println("--(!)Error loading A\n");
                         return;
