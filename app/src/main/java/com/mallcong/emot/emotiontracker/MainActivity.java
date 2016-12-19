@@ -27,6 +27,7 @@ import org.opencv.objdetect.CascadeClassifier;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 public class MainActivity extends AppCompatActivity implements CvCameraViewListener2 {
 
@@ -133,11 +134,27 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
                     Log.i(TAG, "OpenCV loaded successfully");
                     mOpenCvCameraView.enableView();
 
+//                    try {
+//                        InputStream is = getApplicationContext().getResources().openRawResource(R.raw.haarcascade_frontalface_default);
+//                        File cascadeDir = getApplicationContext().getDir("cascade", Context.MODE_PRIVATE);
+//                        mCascadeFile = new File(cascadeDir, "haarcascade_frontalface_default.xml");
+//                        FileOutputStream os = new FileOutputStream(mCascadeFile);
+//
+//                        byte[] buffer = new byte[4096];
+//                        int bytesRead;
+//                        while ((bytesRead = is.read(buffer)) != -1) {
+//                            os.write(buffer, 0, bytesRead);
+//                        }
+//                        is.close();
+//                        os.close();
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+
                     try {
                         InputStream is = getApplicationContext().getResources().openRawResource(R.raw.haarcascade_frontalface_default);
-                        File cascadeDir = getApplicationContext().getDir("cascade", Context.MODE_PRIVATE);
-                        mCascadeFile = new File(cascadeDir, "haarcascade_frontalface_default.xml");
-                        FileOutputStream os = new FileOutputStream(mCascadeFile);
+                        FileOutputStream os = openFileOutput("haarcascade_frontalface_default.xml", MODE_PRIVATE);
+                        mCascadeFile = getFileStreamPath("haarcascade_frontalface_default.xml");
 
                         byte[] buffer = new byte[4096];
                         int bytesRead;
