@@ -1,5 +1,6 @@
 package com.mallcong.emot.emotiontracker;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,7 +17,16 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfRect;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.CascadeClassifier;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity implements CvCameraViewListener2 {
 
@@ -33,23 +43,9 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     Mat mRgba;
     Mat mRgbaF;
     Mat mRgbaT;
-
-    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
-        @Override
-        public void onManagerConnected(int status) {
-            switch (status) {
-                case LoaderCallbackInterface.SUCCESS:
-                {
-                    Log.i(TAG, "OpenCV loaded successfully");
-                    mOpenCvCameraView.enableView();
-                } break;
-                default:
-                {
-                    super.onManagerConnected(status);
-                } break;
-            }
-        }
-    };
+    Mat mGray;
+    private CascadeClassifier faceCascade;
+    private File mCascadeFile;
 
     public MainActivity() {
         Log.i(TAG, "Instantiated new " + this.getClass());
@@ -68,6 +64,38 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
 
         mOpenCvCameraView.setCvCameraViewListener(this);
+    }
+
+
+    public void onCameraViewStarted(int width, int height) {
+        mRgba = new Mat(height, width, CvType.CV_8UC4);
+        mRgbaF = new Mat(height, width, CvType.CV_8UC4);
+        mRgbaT = new Mat(width, width, CvType.CV_8UC4);
+        mGray = new Mat(width, width, CvType.CV_8UC4);
+    }
+
+    public void onCameraViewStopped() {
+        mRgba.release();
+    }
+
+    public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
+        mRgba = inputFrame.rgba();
+        // Rotate mRgba 90 degrees
+        Core.transpose(mRgba, mRgbaT);
+        Imgproc.resize(mRgbaT, mRgbaF, mRgbaF.size(), 0,0, 0);
+        Core.flip(mRgbaF, mRgba, 1 );
+
+        //Convert image to grayscale to improve detection speed and accuracy
+        Imgproc.cvtColor(mRgba, mGray, Imgproc.COLOR_RGBA2GRAY);
+        MatOfRect faceDetections = new MatOfRect();
+        faceCascade.detectMultiScale(mGray, faceDetections);
+        Log.i(TAG, String.format("Detected %s faces", faceDetections.toArray().length));
+        for (Rect rect : faceDetections.toArray()) {
+            Imgproc.rectangle(mGray, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
+                    new Scalar(0, 255, 0), 2);
+        }
+
+        return mGray; // This function must return
     }
 
     @Override
@@ -96,22 +124,47 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             mOpenCvCameraView.disableView();
     }
 
-    public void onCameraViewStarted(int width, int height) {
-        mRgba = new Mat(height, width, CvType.CV_8UC4);
-        mRgbaF = new Mat(height, width, CvType.CV_8UC4);
-        mRgbaT = new Mat(width, width, CvType.CV_8UC4);
-    }
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS:
+                {
+                    Log.i(TAG, "OpenCV loaded successfully");
+                    mOpenCvCameraView.enableView();
 
-    public void onCameraViewStopped() {
-        mRgba.release();
-    }
+                    try {
+                        InputStream is = getApplicationContext().getResources().openRawResource(R.raw.haarcascade_frontalface_default);
+                        File cascadeDir = getApplicationContext().getDir("cascade", Context.MODE_PRIVATE);
+                        mCascadeFile = new File(cascadeDir, "haarcascade_frontalface_default.xml");
+                        FileOutputStream os = new FileOutputStream(mCascadeFile);
 
-    public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
-        mRgba = inputFrame.rgba();
-        // Rotate mRgba 90 degrees
-        Core.transpose(mRgba, mRgbaT);
-        Imgproc.resize(mRgbaT, mRgbaF, mRgbaF.size(), 0,0, 0);
-        Core.flip(mRgbaF, mRgba, 1 );
-        return mRgba; // This function must return
-    }
+                        byte[] buffer = new byte[4096];
+                        int bytesRead;
+                        while ((bytesRead = is.read(buffer)) != -1) {
+                            os.write(buffer, 0, bytesRead);
+                        }
+                        is.close();
+                        os.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    faceCascade = new CascadeClassifier(mCascadeFile.getAbsolutePath());
+                    if(faceCascade.empty()) {
+                        System.out.println("--(!)Error loading A\n");
+                        return;
+                    }
+                    else {
+                        System.out.println("Face classifier loaded up");
+                    }
+                } break;
+                default:
+                {
+                    super.onManagerConnected(status);
+                } break;
+            }
+        }
+    };
+
 }
