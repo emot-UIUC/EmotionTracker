@@ -24,7 +24,12 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:appcompat-v7:25.0.0'
     testCompile 'junit:junit:4.12'
     compile project(':openCVLibrary310')
+    compile files('libs/opencv.jar')
+    compile files('libs/opencv-platform.jar')
+    compile files('libs/opencv-android-x86.jar')
+    compile files('libs/javacpp.jar')
+    compile files('libs/javacv.jar')
 }

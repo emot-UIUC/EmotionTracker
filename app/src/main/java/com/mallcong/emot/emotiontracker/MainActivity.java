@@ -1,7 +1,7 @@
 package com.mallcong.emot.emotiontracker;
 
-import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
+//import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -14,23 +14,21 @@ import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 
-public class MainActivity extends AppCompatActivity implements CvCameraViewListener2 {
+//TODO: 1. Runs on emulator, but does not run on my physical device. 2. Add data set to phone storage to train emotion detector.
+public class MainActivity extends Activity implements CvCameraViewListener2 {
 
     private static final String TAG = MainActivity.class.getName();
 
@@ -82,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
         mRgba = inputFrame.rgba();
-        // Rotate mRgba 90 degrees
+        //Rotate mRgba 90 degrees
 //        Core.transpose(mRgba, mRgbaT);
 //        Imgproc.resize(mRgbaT, mRgbaF, mRgbaF.size(), 0,0, 0);
 //        Core.flip(mRgbaF, mRgba, 1 );
@@ -97,7 +95,24 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
                     new Scalar(0, 255, 0), 2);
         }
 
+        if (faceDetections.toArray().length == 1) {
+
+        } else {
+            Log.i(TAG, String.format("No/multiple faces detected, passing over frame"));
+        }
+
         return mGray; // This function must return
+    }
+
+    /**
+     * Crop the given face
+     * @param gray
+     * @param face
+     * @return
+     */
+    public Mat cropFace(Mat gray, Rect face) {
+        Mat faceSlice = gray.submat(face);
+        return faceSlice;
     }
 
     @Override
