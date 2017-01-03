@@ -1,4 +1,4 @@
-package com.mallcong.emot.emotiontracker;
+package com.danielzou.emot.emotiontracker;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

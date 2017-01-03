@@ -1,4 +1,4 @@
-package com.mallcong.emot.emotiontracker;
+package com.danielzou.emot.emotiontracker;
 
 import org.junit.Test;
 

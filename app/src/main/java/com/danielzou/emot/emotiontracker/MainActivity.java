@@ -1,15 +1,12 @@
-package com.mallcong.emot.emotiontracker;
+package com.danielzou.emot.emotiontracker;
 
 import android.app.Activity;
-//import android.support.v7.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -66,9 +63,9 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        setContentView(R.layout.activity_main);
+        setContentView(com.danielzou.emot.emotiontracker.R.layout.activity_main);
 
-        mOpenCvCameraView = (JavaCameraView) findViewById(R.id.java_surface_view);
+        mOpenCvCameraView = (JavaCameraView) findViewById(com.danielzou.emot.emotiontracker.R.id.java_surface_view);
 
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
 
@@ -83,7 +80,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 
         //Download training set for emotion classifier
         final DownloadTask downloadTask = new DownloadTask(MainActivity.this);
-        downloadTask.execute("Placeholder"); //TODO: Name of the file you want to download
+        downloadTask.execute("https://s3.amazonaws.com/bretl-emot/dataset/anger/0.jpg");
     }
 
 
@@ -171,7 +168,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
                     mOpenCvCameraView.enableView();
 
                     try {
-                        InputStream is = getApplicationContext().getResources().openRawResource(R.raw.haarcascade_frontalface_default);
+                        InputStream is = getApplicationContext().getResources().openRawResource(com.danielzou.emot.emotiontracker.R.raw.haarcascade_frontalface_default);
                         FileOutputStream os = openFileOutput("haarcascade_frontalface_default.xml", MODE_PRIVATE);
                         mCascadeFile = getFileStreamPath("haarcascade_frontalface_default.xml");
 
@@ -241,7 +238,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 
                 // Download
                 input = connection.getInputStream();
-                String fileName = "test"; //TODO: Placeholder
+                String fileName = "anger-0";
                 output = new FileOutputStream("/sdcard/" + fileName);
 
                 byte data[] = new byte[4096];
