@@ -2,11 +2,18 @@ package com.mallcong.emot.emotiontracker;
 
 import android.app.Activity;
 //import android.support.v7.app.AppCompatActivity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.SurfaceView;
 import android.view.WindowManager;
+import android.widget.Toast;
+
 import org.opencv.android.JavaCameraView;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -25,9 +32,13 @@ import org.opencv.objdetect.CascadeClassifier;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
-//TODO: 1. Runs on emulator, but does not run on my physical device. 2. Add data set to phone storage to train emotion detector.
+//TODO: 1. Add data set to phone storage to train emotion detector.
 public class MainActivity extends Activity implements CvCameraViewListener2 {
 
     private static final String TAG = MainActivity.class.getName();
@@ -35,9 +46,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     // Loads camera view of OpenCV for us to use. This lets us see using OpenCV
     private CameraBridgeViewBase mOpenCvCameraView;
 
-    // Used in Camera selection from menu (when implemented)
-    private boolean mIsJavaCamera = true;
-    private MenuItem mItemSwitchCamera = null;
+    private ProgressDialog mProgressDialog;
 
     // These variables are used (at the moment) to fix camera orientation from 270degree to 0degree
     Mat mRgba;
@@ -64,6 +73,17 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
 
         mOpenCvCameraView.setCvCameraViewListener(this);
+
+        //Instantiate progress dialog in onCreate
+        mProgressDialog = new ProgressDialog(MainActivity.this);
+        mProgressDialog.setMessage("Downloading training data...");
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mProgressDialog.setCancelable(false);
+
+        //Download training set for emotion classifier
+        final DownloadTask downloadTask = new DownloadTask(MainActivity.this);
+        downloadTask.execute("Placeholder"); //TODO: Name of the file you want to download
     }
 
 
@@ -150,23 +170,6 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
                     Log.i(TAG, "OpenCV loaded successfully");
                     mOpenCvCameraView.enableView();
 
-//                    try {
-//                        InputStream is = getApplicationContext().getResources().openRawResource(R.raw.haarcascade_frontalface_default);
-//                        File cascadeDir = getApplicationContext().getDir("cascade", Context.MODE_PRIVATE);
-//                        mCascadeFile = new File(cascadeDir, "haarcascade_frontalface_default.xml");
-//                        FileOutputStream os = new FileOutputStream(mCascadeFile);
-//
-//                        byte[] buffer = new byte[4096];
-//                        int bytesRead;
-//                        while ((bytesRead = is.read(buffer)) != -1) {
-//                            os.write(buffer, 0, bytesRead);
-//                        }
-//                        is.close();
-//                        os.close();
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-
                     try {
                         InputStream is = getApplicationContext().getResources().openRawResource(R.raw.haarcascade_frontalface_default);
                         FileOutputStream os = openFileOutput("haarcascade_frontalface_default.xml", MODE_PRIVATE);
@@ -201,4 +204,103 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         }
     };
 
+
+
+    /**
+     * Thanks to:
+     * http://stackoverflow.com/questions/3028306/download-a-file-with-android-and-showing-the-progress-in-a-progressdialog
+     */
+    public class DownloadTask extends AsyncTask<String, Integer, String> {
+
+        private Context context;
+        private PowerManager.WakeLock mWakeLock;
+
+        public DownloadTask(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected String doInBackground(String... sUrl) {
+            InputStream input = null;
+            OutputStream output = null;
+            HttpURLConnection connection = null;
+
+            try {
+                URL url = new URL(sUrl[0]);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+
+                // Expect HTTP 200 OK
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    return "Server returned HTTP " + connection .getResponseCode()
+                            + " " + connection.getResponseMessage();
+                }
+
+                // For displaying download percentage; -1 if length not reported by the server
+                int fileLength = connection.getContentLength();
+
+                // Download
+                input = connection.getInputStream();
+                String fileName = "test"; //TODO: Placeholder
+                output = new FileOutputStream("/sdcard/" + fileName);
+
+                byte data[] = new byte[4096];
+                long total = 0;
+                int count;
+                while ((count = input.read(data)) != 1) {
+                    total += count;
+                    // Publishing the progress
+                    if (fileLength > 0) // Only if the length is known
+                        publishProgress((int) (total * 100 / fileLength));
+                    output.write(data, 0, count);
+                }
+            } catch (Exception e) {
+                return e.toString();
+            } finally {
+                try {
+                    if (output != null)
+                        output.close();
+                    if (input != null)
+                        input.close();
+                } catch (IOException ignored) {
+                }
+
+                if (connection != null)
+                    connection.disconnect();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Take CPU lock to prevent CPU from going off if user presses power button
+            PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+            mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
+            mWakeLock.acquire();
+            mProgressDialog.show();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... progress) {
+            super.onProgressUpdate(progress);
+            // If we get here, the length is known, now set indeterminate to false
+            mProgressDialog.setIndeterminate(false);
+            mProgressDialog.setMax(100);
+            mProgressDialog.setProgress(progress[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            mWakeLock.release();
+            mProgressDialog.dismiss();
+            if (result != null) {
+                Toast.makeText(context, "Download error: " + result, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(context, "File downloaded", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 }
+
