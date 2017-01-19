@@ -52,11 +52,12 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     Mat mGray;
     private CascadeClassifier faceCascade;
     private File mCascadeFile;
+    OpenCVEmotionDetector openCVEmotionDetector;
 
     public MainActivity() {
         System.loadLibrary("opencv_java3");
 
-        OpenCVEmotionDetector openCVEmotionDetector = new OpenCVEmotionDetector("/sdcard/");
+        openCVEmotionDetector = new OpenCVEmotionDetector("/sdcard/");
 
         Log.i(TAG, "Instantiated new " + this.getClass());
     }
@@ -114,6 +115,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         for (Rect rect : faceDetections.toArray()) {
             Imgproc.rectangle(mGray, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
                     new Scalar(0, 255, 0), 2);
+            Log.i(TAG, String.format("Detected " + openCVEmotionDetector.emotionsArr[openCVEmotionDetector.detectEmotion(mGray.submat(rect))]));
         }
 
         if (faceDetections.toArray().length == 1) {

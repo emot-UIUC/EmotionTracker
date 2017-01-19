@@ -31,5 +31,6 @@
     <uses-feature android:name="android.hardware.camera.front.autofocus"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>
