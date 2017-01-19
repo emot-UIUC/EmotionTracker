@@ -11,7 +11,6 @@ import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-//import org.bytedeco.javacpp.opencv_core.
 import org.opencv.android.JavaCameraView;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -55,6 +54,10 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     private File mCascadeFile;
 
     public MainActivity() {
+        System.loadLibrary("opencv_java3");
+
+        OpenCVEmotionDetector openCVEmotionDetector = new OpenCVEmotionDetector("/sdcard/");
+
         Log.i(TAG, "Instantiated new " + this.getClass());
     }
 
