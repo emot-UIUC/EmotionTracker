@@ -18,6 +18,7 @@ import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
@@ -57,7 +58,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     public MainActivity() {
         System.loadLibrary("opencv_java3");
 
-        openCVEmotionDetector = new OpenCVEmotionDetector("/sdcard/");
+        openCVEmotionDetector = new OpenCVEmotionDetector("/storage/emulated/0/Download"); //Downloads foldefr
 
         Log.i(TAG, "Instantiated new " + this.getClass());
     }
@@ -84,8 +85,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         mProgressDialog.setCancelable(false);
 
         //Download training set for emotion classifier
-        final DownloadTask downloadTask = new DownloadTask(MainActivity.this);
-        downloadTask.execute("https://s3.amazonaws.com/bretl-emot/dataset/anger/0.jpg");
+//        final DownloadTask downloadTask = new DownloadTask(MainActivity.this);
+//        downloadTask.execute("https://s3.amazonaws.com/bretl-emot/dataset/anger/0.jpg");
     }
 
 
@@ -99,6 +100,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     public void onCameraViewStopped() {
         mRgba.release();
     }
+
+
 
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
         mRgba = inputFrame.rgba();
@@ -115,7 +118,10 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         for (Rect rect : faceDetections.toArray()) {
             Imgproc.rectangle(mGray, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
                     new Scalar(0, 255, 0), 2);
-            Log.i(TAG, String.format("Detected " + openCVEmotionDetector.emotionsArr[openCVEmotionDetector.detectEmotion(mGray.submat(rect))]));
+            String emotion = openCVEmotionDetector.emotionsArr[openCVEmotionDetector.detectEmotion(mGray.submat(rect))];
+            Imgproc.putText(mGray, "Detected " + emotion, new Point(rect.x, rect.y), Core.FONT_HERSHEY_PLAIN, 1.0, new  Scalar(0,255,255));
+
+            Log.i(TAG, String.format("Detected " + emotion));
         }
 
         if (faceDetections.toArray().length == 1) {

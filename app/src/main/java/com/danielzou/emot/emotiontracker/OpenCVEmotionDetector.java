@@ -49,64 +49,56 @@ public class OpenCVEmotionDetector {
                 Mat gray = imread(item.getAbsolutePath(), CV_LOAD_IMAGE_GRAYSCALE);
                 trainingData.add(gray);
                 trainingLabels.add(emotions.indexOf(emotion));
-                Log.e(TAG, "Training Label: " + emotions.indexOf(emotion));
             }
             for (File item : prediction) {
                 Mat gray = imread(item.getAbsolutePath(), CV_LOAD_IMAGE_GRAYSCALE);
                 predictionData.add(gray);
                 predictionLabels.add(emotions.indexOf(emotion));
-                Log.e(TAG, "Prediction Label: " + emotions.indexOf(emotion));
+                //Log.e(TAG, "Prediction Label: " + emotions.indexOf(emotion));
             }
         }
 
-        Log.e(TAG, "Training fisher face classifier.");
-        Log.e(TAG, "Size of training set is: " + trainingLabels.size() + " images");
+        //Log.e(TAG, "Training fisher face classifier.");
+        //Log.e(TAG, "Size of training set is: " + trainingLabels.size() + " images");
         /**
          * Developed with the help of the JavaCV OpenCVFaceRecognizer sample
          */
-        trainingData = trainingData.subList(247,330);
-        trainingLabels = trainingLabels.subList(247,330);
+        //trainingData = trainingData.subList(247,330);
+        //trainingLabels = trainingLabels.subList(247,330);
         opencv_core.MatVector matVectorOfTrainingData = new MatVector(trainingData.size());
-        Log.e(TAG, "1");
         opencv_core.Mat matOfTrainingLabels = new Mat(trainingLabels.size(), 1, CV_32SC1);
-        Log.e(TAG, "2");
         IntBuffer labelsBuf = matOfTrainingLabels.createBuffer();
-        Log.e(TAG, "3");
         int counter = 0;
         for (Mat image : trainingData) {
             matVectorOfTrainingData.put(counter, image);
             counter++;
         }
-        Log.e(TAG, "4");
         counter = 0;
         for (int label : trainingLabels) {
             labelsBuf.put(counter, label);
             counter++;
         }
-        Log.e(TAG, matVectorOfTrainingData.toString());
-        for (int i = 0; i < matVectorOfTrainingData.size(); i++) {
-            Log.e(TAG, "" + i + matVectorOfTrainingData.get(i).toString());
-        }
-        Log.e(TAG, "Mat of training labels: " + matOfTrainingLabels.toString());
+//        for (int i = 0; i < matVectorOfTrainingData.size(); i++) {
+//            Log.e(TAG, "" + i + matVectorOfTrainingData.get(i).toString());
+//        }
+        //Log.e(TAG, "Mat of training labels: " + matOfTrainingLabels.toString());
 
-        Log.e(TAG, "5");
         mFaceRecognizer.train(matVectorOfTrainingData, matOfTrainingLabels);
-        Log.e(TAG, "6");
-        Log.e(TAG, "Predicting classification set");
-        int count = 0;
-        int correct = 0;
-        int incorrect = 0;
-        for (Mat image : predictionData) {
-            int prediction = detectEmotion(image);
-            if (prediction == predictionLabels.get(count)) {
-                correct++;
-                count++;
-            } else {
-                incorrect++;
-                count++;
-            }
-        }
-        Log.i(TAG, "Classifier accuracy is: " + ((100 * correct)/(correct + incorrect)));
+        //Log.e(TAG, "Predicting classification set");
+//        int count = 0;
+//        int correct = 0;
+//        int incorrect = 0;
+//        for (Mat image : predictionData) {
+//            int prediction = detectEmotion(image);
+//            if (prediction == predictionLabels.get(count)) {
+//                correct++;
+//                count++;
+//            } else {
+//                incorrect++;
+//                count++;
+//            }
+//        }
+//        Log.i(TAG, "Classifier accuracy is: " + ((100 * correct)/(correct + incorrect)));
     }
 
     /**
@@ -120,9 +112,9 @@ public class OpenCVEmotionDetector {
         Log.e(TAG, "Root directory: " + emotionDirectoryPath);
         File emotionDir = new File(emotionDirectoryPath);
         List<File> files = Arrays.asList(emotionDir.listFiles());
-        for(File file : files) {
-            Log.e(TAG, "File: " + file.getName());
-        }
+//        for(File file : files) {
+//            Log.e(TAG, "File: " + file.getName());
+//        }
         //Collections.shuffle(files);
         Log.e(TAG, "Training set size: " + (int)(.8 * files.size()));
         List<File> training = files.subList(0, (int)(.8 * files.size()));
