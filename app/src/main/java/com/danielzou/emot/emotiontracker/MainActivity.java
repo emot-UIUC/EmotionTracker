@@ -5,10 +5,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.PowerManager;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.opencv.android.JavaCameraView;
@@ -58,7 +60,10 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     public MainActivity() {
         System.loadLibrary("opencv_java3");
 
-        openCVEmotionDetector = new OpenCVEmotionDetector("/storage/emulated/0/Download"); //Downloads foldefr
+        File downloadsFolderPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        String downloadFolderPathString = downloadsFolderPath + "/";
+        Log.e(TAG, "Directory for downloads: " + downloadFolderPathString);
+        openCVEmotionDetector = new OpenCVEmotionDetector(downloadFolderPathString); //Downloads folder
 
         Log.i(TAG, "Instantiated new " + this.getClass());
     }
@@ -101,7 +106,14 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         mRgba.release();
     }
 
-
+    private void setText(final TextView text, final String value){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                text.setText(value);
+            }
+        });
+    }
 
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
         mRgba = inputFrame.rgba();
@@ -119,7 +131,17 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
             Imgproc.rectangle(mGray, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
                     new Scalar(0, 255, 0), 2);
             String emotion = openCVEmotionDetector.emotionsArr[openCVEmotionDetector.detectEmotion(mGray.submat(rect))];
-            Imgproc.putText(mGray, "Detected " + emotion, new Point(rect.x, rect.y), Core.FONT_HERSHEY_PLAIN, 1.0, new  Scalar(0,255,255));
+            //Imgproc.putText(mGray, "Detected " + emotion, new Point(0,0), Core.FONT_HERSHEY_TRIPLEX, 2.0, new  Scalar(0,255,255));
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//
+//                //stuff that updates ui
+//                    TextView textView = (TextView) findViewById(R.id.textview);
+//                    textView.setText("Detected" + emotion);
+//                }
+//            });
+            setText((TextView)findViewById(R.id.textview), "Detected: " + emotion);
 
             Log.i(TAG, String.format("Detected " + emotion));
         }

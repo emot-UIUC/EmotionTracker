@@ -33,7 +33,8 @@ public class OpenCVEmotionDetector {
     private static final String TAG = OpenCVEmotionDetector.class.getName();
 
     FaceRecognizer mFaceRecognizer = createFisherFaceRecognizer();
-    final String[] emotionsArr = {"neutral", "anger", "contempt", "disgust", "fear", "happy"};
+    //final String[] emotionsArr = {"neutral", "anger", "contempt", "disgust", "fear", "happy"};
+    final String[] emotionsArr = {"anger", "contempt", "disgust", "fear", "happy"};
     final List<String> emotions = Arrays.asList(emotionsArr);
     List<Mat> trainingData = new ArrayList<>();
     List<Integer> trainingLabels = new ArrayList<>();
@@ -58,13 +59,18 @@ public class OpenCVEmotionDetector {
             }
         }
 
-        //Log.e(TAG, "Training fisher face classifier.");
-        //Log.e(TAG, "Size of training set is: " + trainingLabels.size() + " images");
+        Log.e(TAG, "Training fisher face classifier.");
+        Log.e(TAG, "******Size of training data set (data) is: " + trainingData.size() + " images");
+        Log.e(TAG, "******Size of training data set (labels) is: " + trainingLabels.size() + " images");
+        for (int label:
+             trainingLabels) {
+            Log.e(TAG, emotionsArr[label]);
+        }
         /**
          * Developed with the help of the JavaCV OpenCVFaceRecognizer sample
          */
-        //trainingData = trainingData.subList(247,330);
-        //trainingLabels = trainingLabels.subList(247,330);
+        //trainingData = trainingData.subList(309,trainingData.size());
+        //trainingLabels = trainingLabels.subList(309,trainingLabels.size());
         opencv_core.MatVector matVectorOfTrainingData = new MatVector(trainingData.size());
         opencv_core.Mat matOfTrainingLabels = new Mat(trainingLabels.size(), 1, CV_32SC1);
         IntBuffer labelsBuf = matOfTrainingLabels.createBuffer();
@@ -116,8 +122,11 @@ public class OpenCVEmotionDetector {
 //            Log.e(TAG, "File: " + file.getName());
 //        }
         //Collections.shuffle(files);
-        Log.e(TAG, "Training set size: " + (int)(.8 * files.size()));
-        List<File> training = files.subList(0, (int)(.8 * files.size()));
+
+        //Log.e(TAG, "Training set size: " + (int)(.8 * files.size()));
+        //List<File> training = files.subList(0, (int)(.8 * files.size()));
+
+        List<File> training = files;
         Log.e(TAG, "Training set size: " + training.size());
         List<File> prediction = files.subList((int)(.8 * files.size()) + 1, files.size());
         Log.e(TAG, "Prediction set size: " + prediction.size());
