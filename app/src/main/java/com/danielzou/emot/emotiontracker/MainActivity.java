@@ -20,7 +20,6 @@ import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
@@ -38,7 +37,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-//TODO: 1. Add data set to phone storage to train emotion detector.
 public class MainActivity extends Activity implements CvCameraViewListener2 {
 
     private static final String TAG = MainActivity.class.getName();
@@ -55,7 +53,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     Mat mGray;
     private CascadeClassifier faceCascade;
     private File mCascadeFile;
-    OpenCVEmotionDetector openCVEmotionDetector;
+    EmotionRecognizer emotionRecognizer;
 
     public MainActivity() {
         System.loadLibrary("opencv_java3");
@@ -63,7 +61,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         File downloadsFolderPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         String downloadFolderPathString = downloadsFolderPath + "/";
         Log.e(TAG, "Directory for downloads: " + downloadFolderPathString);
-        openCVEmotionDetector = new OpenCVEmotionDetector(downloadFolderPathString); //Downloads folder
+        emotionRecognizer = new EmotionRecognizer(downloadFolderPathString); //Downloads folder
 
         Log.i(TAG, "Instantiated new " + this.getClass());
     }
@@ -130,7 +128,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         for (Rect rect : faceDetections.toArray()) {
             Imgproc.rectangle(mGray, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
                     new Scalar(0, 255, 0), 2);
-            String emotion = openCVEmotionDetector.emotionsArr[openCVEmotionDetector.detectEmotion(mGray.submat(rect))];
+            String emotion = emotionRecognizer.emotionsArr[emotionRecognizer.detectEmotion(mGray.submat(rect))];
             //Imgproc.putText(mGray, "Detected " + emotion, new Point(0,0), Core.FONT_HERSHEY_TRIPLEX, 2.0, new  Scalar(0,255,255));
 //            runOnUiThread(new Runnable() {
 //                @Override

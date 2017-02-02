@@ -12,7 +12,6 @@
     tools:context="com.danielzou.emot.emotiontracker.MainActivity"
     android:orientation="vertical">
 
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -29,7 +28,5 @@
             opencv:show_fps="true"
             opencv:camera_id="any" />
     </FrameLayout>
-
-
 
 </LinearLayout>

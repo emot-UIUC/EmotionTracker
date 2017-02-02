@@ -34,11 +34,11 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.0.0'
     //compile 'org.bytedeco:javacv:1.1'
     testCompile 'junit:junit:4.12'
+    compile project(':openCVLibrary320')
     compile files('libs/opencv.jar')
     //compile files('libs/javacpp.jar')
     compile files('libs/javacv.jar')
-    compile project(':openCVLibrary320')
-   // compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.11-0.11', classifier: 'android-arm'
+    // compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.11-0.11', classifier: 'android-arm'
     //compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.11-0.11', classifier: 'android-x86'
     //compile group: 'org.bytedeco.javacpp-presets', name: 'ffmpeg', version: '2.6.1-0.11', classifier: 'android-arm'
     //compile group: 'org.bytedeco.javacpp-presets', name: 'ffmpeg', version: '2.6.1-0.11', classifier: 'android-x86'
