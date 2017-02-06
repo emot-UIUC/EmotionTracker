@@ -123,7 +123,9 @@ public class EmotionRecognizer {
         String emotionDirectoryPath = trainingDir + "dataset/" + emotion + "/"; // File path on Mac, Android uses forward slashes.
         Log.e(TAG, "Root directory: " + emotionDirectoryPath);
         File emotionDir = new File(emotionDirectoryPath);
-        List<File> files = Arrays.asList(emotionDir.listFiles());
+        File filesArr[] = emotionDir.listFiles();
+        Log.e(TAG, "Number of files in this dir: " + filesArr.length);
+        List<File> files = Arrays.asList(filesArr);
 
         Collections.shuffle(files);
 

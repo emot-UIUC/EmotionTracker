@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.1"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
     defaultConfig {
         applicationId "com.mallcong.emot.emotiontracker"
         minSdkVersion 21
-        targetSdkVersion 25
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -31,31 +31,26 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.0.0'
-    //compile 'org.bytedeco:javacv:1.1'
+    compile 'com.android.support:appcompat-v7:23.0.0'
     testCompile 'junit:junit:4.12'
     compile project(':openCVLibrary320')
     compile files('libs/opencv.jar')
-    //compile files('libs/javacpp.jar')
     compile files('libs/javacv.jar')
-    // compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.11-0.11', classifier: 'android-arm'
-    //compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.11-0.11', classifier: 'android-x86'
-    //compile group: 'org.bytedeco.javacpp-presets', name: 'ffmpeg', version: '2.6.1-0.11', classifier: 'android-arm'
-    //compile group: 'org.bytedeco.javacpp-presets', name: 'ffmpeg', version: '2.6.1-0.11', classifier: 'android-x86'
 }
 
 //apply plugin: 'com.android.application'
 //
 //android {
 //    compileSdkVersion 25
-//    buildToolsVersion "25.0.0"
+//    buildToolsVersion "25.0.1"
 //    defaultConfig {
 //        applicationId "com.mallcong.emot.emotiontracker"
 //        minSdkVersion 21
-//        targetSdkVersion 21
+//        targetSdkVersion 25
 //        versionCode 1
 //        versionName "1.0"
 //        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+//        multiDexEnabled true
 //    }
 //    buildTypes {
 //        release {
@@ -64,6 +59,10 @@ dependencies {
 //        }
 //    }
 //    productFlavors {
+//    }
+//
+//    dexOptions {
+//        javaMaxHeapSize "4g"
 //    }
 //}
 //
@@ -74,12 +73,7 @@ dependencies {
 //    })
 //    compile 'com.android.support:appcompat-v7:25.0.0'
 //    testCompile 'junit:junit:4.12'
+//    compile project(':openCVLibrary320')
 //    compile files('libs/opencv.jar')
-//    //compile files('libs/opencv-platform.jar')
-//    compile files('libs/opencv-android-x86.jar')
-//    compile files('libs/javacpp.jar')
 //    compile files('libs/javacv.jar')
-//    //compile files('libs/aws-java-sdk-1.11.75.jar')
-//    compile files('libs/opencv-android-arm.jar')
-//    compile project(':openCVLibrary310')
 //}
