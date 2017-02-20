@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
     defaultConfig {
         applicationId "com.mallcong.emot.emotiontracker"
         minSdkVersion 21
-        targetSdkVersion 23
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -24,6 +24,14 @@ android {
     dexOptions {
         javaMaxHeapSize "4g"
     }
+    packagingOptions {
+        pickFirst 'org/bytedeco/javacpp/macosx-x86_64/libusb-1.0.dylib'
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+        pickFirst 'META-INF/maven/org.bytedeco.javacpp-presets/opencv/pom.properties'
+        pickFirst 'META-INF/maven/org.bytedeco.javacpp-presets/opencv/pom.xml'
+        pickFirst 'META-INF/maven/org.bytedeco.javacpp-presets/ffmpeg/pom.properties'
+        pickFirst 'META-INF/maven/org.bytedeco.javacpp-presets/ffmpeg/pom.xml'
+    }
 }
 
 dependencies {
@@ -31,49 +39,17 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:23.0.0'
+    compile 'com.android.support:appcompat-v7:21.0.0'
     testCompile 'junit:junit:4.12'
-    compile project(':openCVLibrary320')
-    compile files('libs/opencv.jar')
-    compile files('libs/javacv.jar')
+    //compile project(':openCVLibrary320')
+    //compile files('libs/opencv.jar')
+    //compile files('libs/javacv.jar')
+    //compile files('libs/opencv-android-arm.jar')
+    //compile files('libs/opencv.jar')
+    compile group: 'org.bytedeco', name: 'javacv', version: '1.3.1'
+    compile group: 'org.bytedeco', name: 'javacv-platform', version: '1.3.1'
+    compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.8-2-SNAPSHOT'
+    compile group: 'org.bytedeco.javacpp-presets', name: 'opencv', version: '2.4.9-0.8-2-SNAPSHOT', classifier: 'android-arm'
+    compile project(path: ':openCVLibrary320')
 }
 
-//apply plugin: 'com.android.application'
-//
-//android {
-//    compileSdkVersion 25
-//    buildToolsVersion "25.0.1"
-//    defaultConfig {
-//        applicationId "com.mallcong.emot.emotiontracker"
-//        minSdkVersion 21
-//        targetSdkVersion 25
-//        versionCode 1
-//        versionName "1.0"
-//        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-//        multiDexEnabled true
-//    }
-//    buildTypes {
-//        release {
-//            minifyEnabled false
-//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-//        }
-//    }
-//    productFlavors {
-//    }
-//
-//    dexOptions {
-//        javaMaxHeapSize "4g"
-//    }
-//}
-//
-//dependencies {
-//    compile fileTree(include: ['*.jar'], dir: 'libs')
-//    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-//        exclude group: 'com.android.support', module: 'support-annotations'
-//    })
-//    compile 'com.android.support:appcompat-v7:25.0.0'
-//    testCompile 'junit:junit:4.12'
-//    compile project(':openCVLibrary320')
-//    compile files('libs/opencv.jar')
-//    compile files('libs/javacv.jar')
-//}
